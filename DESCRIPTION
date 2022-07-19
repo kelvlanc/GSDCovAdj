@@ -1,0 +1,20 @@
+Package: GSDCovAdj
+Title: Combining group sequential, information-adaptive designs with covariate adjustment 
+Version: 1.0.0.0
+Authors@R: 
+    c(person("Kelly", "Van Lancker",,"kelly.vanlancker@ugent.be", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-3458-3788")),
+           person("Josh", "Betz",, "jbetz@jhu.edu", role = c("aut"),
+           comment = c(ORCID = "0000-0003-4488-9799")),
+           person("Michael", "Rosenblum",, "mrosen@jhu.edu", role = c("aut"),
+           comment = c(ORCID = "0000-0001-7411-4172")))
+Description: What the package does (one paragraph).
+License: GPL (>= 2)
+Imports: tibble, magrittr, stats, methods, ldbounds, parallel, dplyr, mvtnorm, betareg, nnet, boot, utils, rpact
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+
+
+
+
