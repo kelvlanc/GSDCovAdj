@@ -626,13 +626,13 @@ impute_beta <-
       beta_params <-
         data.frame(
           mean =
-            predict(
+            betareg::predict(
               object = impute_model,
               newdata = data[which(impute_columns[,i]),],
               type = "response"
             ),
           var =
-            predict(
+            betareg::predict(
               object = impute_model,
               newdata = data[which(impute_columns[,i]),],
               type = "variance"
