@@ -23,7 +23,7 @@ interimInformation(
 
 \item{totalInformation}{A numeric value indicating the total/maximum information.}
 
-\item{analysisNumber}{A numveric value representing the number of the current analysis.}
+\item{analysisNumber}{A numeric value representing the number of the current analysis.}
 
 \item{previousDatasets}{A list of data frames with same structure as in output of \code{data_at_time_t}. They represent the observed datasets up to the previous analysis time.}
 
