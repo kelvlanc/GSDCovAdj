@@ -26,39 +26,39 @@ tmle(
 )
 }
 \arguments{
-\item{data}{A data frame containing all observed data for the current analysis}
+\item{data}{A data frame containing the observed data at a given time. This data frame should have the same structure as the data frame outputted by \code{data_at_time_t}.}
 
-\item{estimand}{Estimand of interest; treatment effect on "difference" scale, "ratio" scale or odds ratio ("oddsratio") scale}
+\item{estimand}{A character string indicating the estimand of interest; treatment effect on "difference" scale, "ratio" scale or odds ratio ("oddsratio") scale.}
 
-\item{propensity_score_formula}{TODO}
+\item{propensity_score_formula}{A formula for the propensity score model - the left-hand-side indicates the binary treatment assignment indicator variable.}
 
-\item{inverse_weight_formulas}{TODO}
+\item{inverse_weight_formulas}{A list of formulas for computing inverse probability of censoring weights. Only the right-hand side of the formula is used.}
 
-\item{outcome_formulas}{TODO}
+\item{outcome_formulas}{A list of formulas with one formula per outcome model, ordered from the first to the last observed outcome.}
 
-\item{outcome_type}{TODO}
+\item{outcome_type}{A character string indicating the type of outcome model to be fitted: "gaussian", "logistic", "binomial", "multinomial-binomial".}
 
-\item{outcome_range}{TODO}
+\item{outcome_range}{A numeric vector of length 2 indicating the range of the outcome. Only used when outcome_type == "logistic".}
 
-\item{absorbing_state}{TODO}
+\item{absorbing_state}{A character vector indicating which level (if any) of the outcome is an absorbing state. Only used when outcome_type == "multinomial-binomial".}
 
-\item{absorbing_outcome}{TODO}
+\item{absorbing_outcome}{A value of 0 or 1 denoting whether the absorbing state is a success (1) or failure (0) for the binary final outcome. Only used when outcome_type == "multinomial-binomial".}
 
-\item{impute_formulas}{TODO}
+\item{impute_formulas}{A list of formulas with one formula per intermediate outcome, containing the paramaterization of imputation models for intermediate outcomes.}
 
-\item{impute_model}{TODO}
+\item{impute_model}{A character vector indicating the family of imputation model to use: "gaussian" (default), "binomial", "beta", "pmm", "multinomial".}
 
-\item{imputation_args}{TODO}
+\item{imputation_args}{A list of arguments to pass to functions performing imputation.}
 
-\item{ci}{TODO}
+\item{ci}{TRUE/FALSE - Should bootstrap-based confidence intervals be returned (TRUE) or just the estimate (FALSE).}
 
-\item{verbose}{TODO}
+\item{verbose}{TRUE/FALSE - Should all models and intermediate results be returned (TRUE) or just the estimate (FALSE).}
 
-\item{bootstrap_n}{TODO}
+\item{bootstrap_n}{Number of bootstrap replicates used to perform bootstrap inference.}
 
-\item{bootstrap_type}{TODO}
+\item{bootstrap_type}{The type of bootstrap to perform: "bca" (default), "norm", "basic", or "perc".}
 
-\item{alpha}{TODO}
+\item{alpha}{Type I Error rate used in the confidence level for bootstrap inference - Defaults to 0.05.}
 
 \item{...}{Further arguments for the estimator function.}
 }
