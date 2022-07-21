@@ -4,7 +4,7 @@
 #'
 #' @param data A data frame containing the observed data at a given time. This data frame should have the same structure as the data frame outputted by \code{data_at_time_t}.
 #' @param totalInformation A numeric value indicating the total/maximum information.
-#' @param analysisNumber A numveric value representing the number of the current analysis.
+#' @param analysisNumber A numeric value representing the number of the current analysis.
 #' @param previousDatasets A list of data frames with same structure as in output of \code{data_at_time_t}. They represent the observed datasets up to the previous analysis time.
 #' @param estimationMethod A function naming the function to be called to estimate the treatment effect. Included in this package: \code{standardization} and \code{tmle}.
 #' @param estimand A character string indicating the estimand of interest; treatment effect on "difference" scale, "ratio" scale or odds ratio ("oddsratio") scale.
