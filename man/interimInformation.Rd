@@ -15,6 +15,7 @@ interimInformation(
   previousEstimatesOriginal = c(),
   previousCovMatrixOriginal = c(),
   parametersPreviousEstimators = NULL,
+  correction = "no",
   ...
 )
 }
@@ -38,6 +39,8 @@ interimInformation(
 \item{previousCovMatrixOriginal}{A matrix of numeric varlues respresenting the covariance matrix of the (original) estimates up to the previous analysis.}
 
 \item{parametersPreviousEstimators}{A list of a list with the parameters used for the previous estimates. One can also change the estimation method by adding \code{estimationMethod} to the different lists corresponding with the different analyses.}
+
+\item{correction}{Should a small sample correction be included?}
 
 \item{...}{Further arguments for the estimator function or calculation of the variance (ie, number of bootstraps).}
 }
