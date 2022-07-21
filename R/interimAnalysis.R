@@ -97,11 +97,9 @@ interimAnalysis = function(data,
   }
 
   if(correction=="yes"){
-
     correctionTerm = do.call(what = calculateCorrectionTerm,
                              args = all_args[intersect(x=names(all_args),
                                                        y= formalArgs(calculateCorrectionTerm))])
-
 
   }else{
     correctionTerm = 1
