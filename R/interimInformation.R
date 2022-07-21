@@ -12,6 +12,7 @@
 #' @param previousEstimatesOriginal A vector of numeric values containing the (original) estimates up to the previous analysis.
 #' @param previousCovMatrixOriginal A matrix of numeric varlues respresenting the covariance matrix of the (original) estimates up to the previous analysis.
 #' @param parametersPreviousEstimators A list of a list with the parameters used for the previous estimates. One can also change the estimation method by adding \code{estimationMethod} to the different lists corresponding with the different analyses.
+#' @param correction Should a small sample correction be included?
 #' @param ... Further arguments for the estimator function or calculation of the variance (ie, number of bootstraps).
 #'
 #' @return An object of the class \code{interimInformation}.
@@ -29,6 +30,7 @@ interimInformation = function(data,
                               previousEstimatesOriginal=c(),
                               previousCovMatrixOriginal=c(),
                               parametersPreviousEstimators = NULL,
+                              correction="no",
                               ...){
 
   ellipsis_args = as.list(substitute(list(...)))[-1L]
@@ -38,10 +40,21 @@ interimInformation = function(data,
   estimate = do.call(what = calculateEstimate,
                      args = all_args)
 
+  if(correction=="yes"){
+    correctionTerm = do.call(what = calculateCorrectionTerm,
+                             args = all_args[intersect(x=names(all_args),
+                                                       y= formalArgs(calculateCorrectionTerm))])
+
+  }else{
+    correctionTerm = 1
+  }
+
   if(update == "no" | analysisNumber==1){
 
     variance = do.call(what = calculateVariance,
                        args = all_args)
+
+    variance = variance*correctionTerm
 
     # Calculate (original) information and information time
     information = 1/variance
@@ -67,7 +80,7 @@ interimInformation = function(data,
       covMatrixOriginal=covMatrix,
       estimatesOriginal=c(previousEstimatesOriginal, estimate))
 
-    information = 1/updated[[2]]
+    information = 1/(updated[[2]]*correctionTerm)
     informationTime = information/totalInformation
 
   }
