@@ -12,7 +12,8 @@ data_at_time_t(
   covariate_columns,
   outcome_columns,
   outcome_times,
-  analysis_time
+  analysis_time,
+  time_to_event = FALSE
 )
 }
 \arguments{
@@ -26,16 +27,19 @@ data_at_time_t(
 
 \item{covariate_columns}{A vector of character string representing the column names of the covariates.}
 
-\item{outcome_columns}{A vector of character string representing the column names of the outcomes (including intermediate outcomes).}
+\item{outcome_columns}{A vector of character string representing the column names of the outcomes (including intermediate outcomes). For time-to-event endpoints these are the column names of the status indicator.}
 
-\item{outcome_times}{A vector of character strings representing the column names of the outcome times (including intermediate outcomes).}
+\item{outcome_times}{A vector of character strings representing the column names of the outcome times (including intermediate outcomes). For time-to-event endpoints these are the column names of the times a participant got the event or was censored.}
 
 \item{analysis_time}{A numeric value for the time of the analysis.}
+
+\item{time_to_event}{\code{time_to_event=TRUE} for time-to-event endpoints. Default is \code{FALSE}.}
 }
 \value{
 A data frame with the data of the patients already in the study at \code{analysis_time}. In addition to the original dataset, the output dataset has the additional column(s):
 \describe{
-\item{\code{.r_j}}{which equals \code{1} if outcome j is already observed for participant j at \code{analysis_time} and \code{NA} otherwise.}
+\item{\code{.r_j}}{which equals \code{1} if outcome j is already observed (for a certain participant) at \code{analysis_time} and \code{NA} otherwise.}
+\item{\code{.time_to_event_j}}{the follow-up time corresponding with event j (for time-to-event endpoints only), truncated by the time of the (interim) analysis.}
 }
 }
 \description{
