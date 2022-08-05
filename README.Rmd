@@ -25,6 +25,7 @@ Kelly Van Lancker, Josh Betz and Michael Rosenblum
 ## Installation
 
 Before installation of the development version of **GSDCovAdj**, we recommend installing the package simul from [GitHub](https://github.com/) with:
+
 ``` r
 # install.packages("devtools")
 devtools::install_github("nt-williams/simul")
