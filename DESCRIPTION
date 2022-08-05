@@ -17,4 +17,4 @@ RoxygenNote: 7.1.2
 LazyData: true
 URL: https://github.com/kelvlanc/GSDCovAdj
 BugReports: https://github.com/kelvlanc/GSDCovAdj/issues
-Remotes: nt-williams/adjrct, nt-williams/simul
+Remotes: nt-williams/simul, nt-williams/adjrct
