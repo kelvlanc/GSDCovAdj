@@ -21,6 +21,26 @@
 #' \item{\code{.r_j}}{which equals \code{1} if outcome j is already observed (for a certain participant) at \code{analysis_time} and \code{NA} otherwise.}
 #' \item{\code{.time_to_event_j}}{the follow-up time corresponding with event j (for time-to-event endpoints only), truncated by the time of the (interim) analysis.}
 #' }
+#'
+#' @examples
+#' colon_cancer_enr = colon_cancer
+#' colon_cancer_enr$trt = ifelse(colon_cancer_enr$arm=="Obs", 1, 0)
+#' colon_cancer_enr$enrollmentTime = c(rep(1:100, 9), 1:29)
+#' colon_cancer_enr$deathTime = colon_cancer_enr$months_to_death +
+#' colon_cancer_enr$enrollmentTime
+#' analysis_dataset = data_at_time_t(
+#' data = colon_cancer_enr,
+#' id_column = "id",
+#' analysis_time = 50,
+#' enrollment_time = "enrollmentTime",
+#' treatment_column = "trt",
+#' covariate_columns = c("age" , "sex"),
+#' outcome_columns = c("event_death"),
+#' outcome_times =  c("deathTime"),
+#' time_to_event = TRUE
+#' )
+#' analysis_dataset
+#'
 #' @export
 data_at_time_t <-
   function(

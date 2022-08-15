@@ -39,6 +39,77 @@
 #'   \item{decisionUpdated}{The decision corresponding with the updated estimate at the current analysis: A string value indicating whether one can stop for \code{"Futility"}, \code{"Efficacy"} or whether one can not stop (\code{"No"}).}
 #'   \item{informationTimeUpdated}{The information time corresponding with the updated estimate at the current analysis.}
 #'   \item{covMatrixOriginal}{A matrix of numeric values representing the covariance matrix of the original estimates up to the current analysis.}}
+#'
+#' @examples
+#' colon_cancer_enr = colon_cancer
+#' colon_cancer_enr$trt = ifelse(colon_cancer_enr$arm=="Obs", 1, 0)
+#' colon_cancer_enr$enrollmentTime = c(rep(1:100, 9), 1:29)
+#' colon_cancer_enr$deathTime = colon_cancer_enr$months_to_death +
+#' colon_cancer_enr$enrollmentTime
+#' analysis_dataset = data_at_time_t(
+#' data = colon_cancer_enr,
+#' id_column = "id",
+#' analysis_time = 50,
+#' enrollment_time = "enrollmentTime",
+#' treatment_column = "trt",
+#' covariate_columns = c("age" , "sex"),
+#' outcome_columns = c("event_death"),
+#' outcome_times =  c("deathTime"),
+#' time_to_event = TRUE
+#' )
+#' interim1=interimAnalysis(data = analysis_dataset,
+#' totalInformation=5000,
+#' estimationMethod= survrct_diff,
+#' estimand = "survprob",
+#' previousEstimatesOriginal=c(),
+#' previousCovMatrixOriginal=c(),
+#' previousInformationTimesOriginal=c(),
+#' previousInformationTimesUpdated=c(),
+#' previousDatasets = list(),
+#' null.value = 0,
+#' alpha = 0.05,
+#' beta = 0.2,
+#' alternative = "two.sided",
+#' typeOfDesign = "asP",
+#' typeBetaSpending = "none",
+#' futilityStopping = FALSE,
+#' plannedAnalyses=2,
+#' plannedInformationTimes = NULL,
+#' parametersPreviousEstimators = NULL,
+#' correction="no",
+#' bootstraps =100,
+#' outcome.formula=Surv(.time_to_event_1, event_death) ~ trt + age,
+#' trt.formula=trt ~ 1,
+#' horizon = 14)
+#' interim1
+#' final = interimAnalysis(data = colon_cancer,
+#'                         totalInformation=5000,
+#'                         estimationMethod= survrct_diff,
+#'                         estimand = "survprob",
+#'                         previousEstimatesOriginal=as.numeric(interim1[[1]]),
+#'                         previousCovMatrixOriginal=interim1[[11]],
+#'                         previousInformationTimesOriginal=as.numeric(interim1[[5]]),
+#'                         previousInformationTimesUpdated=as.numeric(interim1[[10]]),
+#'                         previousDatasets = list(analysis_dataset),
+#'                         null.value = 0,
+#'                         alpha = 0.05,
+#'                         beta = 0.2,
+#'                         alternative = "two.sided",
+#'                         typeOfDesign = "asP",
+#'                         typeBetaSpending = "none",
+#'                         futilityStopping = FALSE,
+#'                         plannedAnalyses=2,
+#'                         bootstraps=10,
+#'                         plannedInformationTimes = NULL,
+#'                         parametersPreviousEstimators = list(list(outcome.formula=Surv(.time_to_event_1, event_death) ~ trt + age,
+#'                                                              trt.formula=trt ~ 1,
+#'                                                              horizon = 14)),
+#'                         correction="no",
+#'                         outcome.formula=Surv(months_to_death, event_death) ~ trt + age,
+#'                         trt.formula=trt ~ 1,
+#'                         horizon = 14)
+#' final
+#'
 #' @export
 interimAnalysis = function(data,
                            totalInformation,

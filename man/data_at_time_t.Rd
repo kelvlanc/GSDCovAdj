@@ -45,3 +45,22 @@ A data frame with the data of the patients already in the study at \code{analysi
 \description{
 A function that returns the a data frame with the observed data at a given \code{analysis_time}.
 }
+\examples{
+colon_cancer_enr = colon_cancer
+colon_cancer_enr$trt = ifelse(colon_cancer_enr$arm=="Obs", 1, 0)
+colon_cancer_enr$enrollmentTime = c(rep(1:100, 9), 1:29)
+colon_cancer_enr$deathTime = colon_cancer_enr$months_to_death +
+colon_cancer_enr$enrollmentTime
+analysis_dataset = data_at_time_t(
+data = colon_cancer_enr,
+id_column = "id",
+analysis_time = 50,
+enrollment_time = "enrollmentTime",
+treatment_column = "trt",
+covariate_columns = c("age" , "sex"),
+outcome_columns = c("event_death"),
+outcome_times =  c("deathTime"),
+time_to_event = TRUE
+)
+
+}
