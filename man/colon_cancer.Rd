@@ -19,16 +19,14 @@ A data frame with 15,955 rows and 10 columns:
 \item{local_spread}{Extent of local spread (\verb{1. Submucosa}, \verb{2. Muscle}, \verb{3. Serosa}, \verb{4. Contiguous structures})}
 \item{time_surgery_registration}{Time from surgery to registration (\verb{0. Short}, \verb{1. Long})}
 \item{event_death}{Observed (1) or Censored (0)}
-\item{time_to_death}{Days util death}
+\item{time_to_death}{Days until death}
 \item{event_recurrence}{Observed (1) or Censored (0)}
 \item{time_to_recurrence}{Days until recurrence event}
-\item{recurrence}{Observed (1. Yes) or Censored (0. No)}
-\item{death}{Observed (1. Yes) or Censored (0. No)}
-\item{composite}{Observed (1. Yes) or Censored (0. No)}
 \item{time_to_composite}{Days until first composite event or censoring time}
-\item{months_to_death}{Month until death}
+\item{months_to_death}{Months until death}
 \item{months_to_recurrence}{Months until recurrence event}
 \item{months_to_composite}{Months until first composite event or censoring time}
+\item{event_composite}{Observed (1) or Censored (0)}
 }
 }
 \usage{
