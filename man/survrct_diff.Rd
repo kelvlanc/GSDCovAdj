@@ -38,3 +38,12 @@ An estimated value for the treatment effect based on the observed dataset and es
 \description{
 A function that estimates the treatment effect wrt a time-to-event outcome via a targeted maximum likelihood estimator.
 }
+\examples{
+
+survrct_diff(data=colon_cancer,
+estimand = "survprob",
+outcome.formula=Surv(months_to_death, event_death) ~ trt + age,
+trt.formula=trt ~ 1,
+horizon=14)
+
+}

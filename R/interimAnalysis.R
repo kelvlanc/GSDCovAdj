@@ -101,9 +101,10 @@
 #'                         plannedAnalyses=2,
 #'                         bootstraps=10,
 #'                         plannedInformationTimes = NULL,
-#'                         parametersPreviousEstimators = list(list(outcome.formula=Surv(.time_to_event_1, event_death) ~ trt + age,
-#'                                                              trt.formula=trt ~ 1,
-#'                                                              horizon = 14)),
+#'                         parametersPreviousEstimators =
+#'                         list(list(outcome.formula=Surv(.time_to_event_1, event_death) ~ trt + age,
+#'                         trt.formula=trt ~ 1,
+#'                         horizon = 14)),
 #'                         correction="no",
 #'                         outcome.formula=Surv(months_to_death, event_death) ~ trt + age,
 #'                         trt.formula=trt ~ 1,
