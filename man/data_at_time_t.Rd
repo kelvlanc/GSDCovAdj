@@ -62,5 +62,6 @@ outcome_columns = c("event_death"),
 outcome_times =  c("deathTime"),
 time_to_event = TRUE
 )
+analysis_dataset
 
 }

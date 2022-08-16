@@ -16,6 +16,35 @@
 #'   \item{estimate}{Original estimate based on a standardization estimator (also called G-computation).}
 #'   \item{y1_pred}{Predictions of the outcome under treatment for all recruited participants.}
 #'   \item{y0_pred}{Predictions of the outcome under control for all recruited participants.}}
+#'
+#' @examples
+#' ctn03_sim$arm = ifelse(ctn03_sim$arm=="7-day", 1, 0)
+#' ctn03_sim$.r_1 = 1
+#' standardization(data = ctn03_sim,
+#'                 estimand = "difference",
+#'                 y0_formula = 1*(uds_opioids_eot == "Negative") ~
+#'                   stability_dose + age + sex + marital +
+#'                   cows_total_score_bl + vas_crave_opiates_bl +
+#'                   vas_current_withdrawal_bl + vas_study_tx_help_bl +
+#'                   uds_opioids_bl + uds_oxycodone_bl + uds_any_positive_bl,
+#'                 y1_formula = 1*(uds_opioids_eot == "Negative") ~
+#'                   stability_dose + age + sex + marital +
+#'                   cows_total_score_bl + vas_crave_opiates_bl +
+#'                   vas_current_withdrawal_bl + vas_study_tx_help_bl +
+#'                   uds_opioids_bl + uds_oxycodone_bl + uds_any_positive_bl,
+#'                 family = binomial(link = "logit"),
+#'                 treatment_column = "arm")
+#' formula =
+#'   1*(ctn03_sim$uds_opioids_eot == "Negative") ~
+#'   arm + arsw_score_eot +
+#'   stability_dose + age + sex + marital +
+#'   cows_total_score_bl + vas_crave_opiates_bl +
+#'   vas_current_withdrawal_bl + vas_study_tx_help_bl +
+#'   uds_opioids_bl + uds_oxycodone_bl + uds_any_positive_bl,
+#' data = ctn03_sim,
+#' family = binomial(link = "logit")
+#' )
+#'
 #' @export
 standardization = function(data,
                            estimand = "difference",

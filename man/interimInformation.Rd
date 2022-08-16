@@ -53,3 +53,32 @@ An object of the class \code{interimInformation}.
 \description{
 A function estimating the (statistical) information based on a data frame and estimation function.
 }
+\examples{
+colon_cancer_enr = colon_cancer
+colon_cancer_enr$trt = ifelse(colon_cancer_enr$arm=="Obs", 1, 0)
+colon_cancer_enr$enrollmentTime = c(rep(1:100, 9), 1:29)
+colon_cancer_enr$deathTime = colon_cancer_enr$months_to_death +
+colon_cancer_enr$enrollmentTime
+analysis_dataset = data_at_time_t(
+data = colon_cancer_enr,
+id_column = "id",
+analysis_time = 50,
+enrollment_time = "enrollmentTime",
+treatment_column = "trt",
+covariate_columns = c("age" , "sex"),
+outcome_columns = c("event_death"),
+outcome_times =  c("deathTime"),
+time_to_event = TRUE
+)
+interimInformation(data = analysis_dataset,
+totalInformation = 5000,
+analysisNumber=1,
+estimationMethod = survrct_diff,
+estimand = "survprob",
+update="no",
+outcome.formula=Surv(.time_to_event_1, event_death) ~ trt + age,
+trt.formula=trt ~ 1,
+horizon = 14,
+bootstraps=100)
+
+}
