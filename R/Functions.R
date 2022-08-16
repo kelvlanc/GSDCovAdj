@@ -249,7 +249,7 @@ calculateCorrectionTerm = function(data,
   if(estimationMethod==tmle){
     number = length(names(select(data, contains(".r_"))))
     n=length(which(data[,paste(".r_",number,sep='')]==1))
-    p=dim(model.matrix(outcome_formula, data))[2]
+    p=dim(model.matrix(outcome_formula[[number]], data))[2]
     correctionTerm = (n-1)/(n-p)
   }else{
     if(estimationMethod==standardization){
