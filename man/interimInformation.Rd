@@ -54,6 +54,7 @@ An object of the class \code{interimInformation}.
 A function estimating the (statistical) information based on a data frame and estimation function.
 }
 \examples{
+\dontrun{
 colon_cancer_enr = colon_cancer
 colon_cancer_enr$trt = ifelse(colon_cancer_enr$arm=="Obs", 1, 0)
 colon_cancer_enr$enrollmentTime = c(rep(1:100, 9), 1:29)
@@ -79,6 +80,7 @@ update="no",
 outcome.formula=Surv(.time_to_event_1, event_death) ~ trt + age,
 trt.formula=trt ~ 1,
 horizon = 14,
-bootstraps=100)
+bootstraps=10)
+}
 
 }

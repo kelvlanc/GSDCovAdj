@@ -21,6 +21,7 @@
 #'   \item{informationTime}{The information time, that is, the (estimated) information available relative to the total information.}}
 #'
 #' @examples
+#' \dontrun{
 #' colon_cancer_enr = colon_cancer
 #' colon_cancer_enr$trt = ifelse(colon_cancer_enr$arm=="Obs", 1, 0)
 #' colon_cancer_enr$enrollmentTime = c(rep(1:100, 9), 1:29)
@@ -46,7 +47,8 @@
 #' outcome.formula=Surv(.time_to_event_1, event_death) ~ trt + age,
 #' trt.formula=trt ~ 1,
 #' horizon = 14,
-#' bootstraps=100)
+#' bootstraps=10)
+#' }
 #'
 #' @export
 interimInformation = function(data,

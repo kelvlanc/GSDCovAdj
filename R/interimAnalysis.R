@@ -41,6 +41,7 @@
 #'   \item{covMatrixOriginal}{A matrix of numeric values representing the covariance matrix of the original estimates up to the current analysis.}}
 #'
 #' @examples
+#' \dontrun{
 #' colon_cancer_enr = colon_cancer
 #' colon_cancer_enr$trt = ifelse(colon_cancer_enr$arm=="Obs", 1, 0)
 #' colon_cancer_enr$enrollmentTime = c(rep(1:100, 9), 1:29)
@@ -110,6 +111,7 @@
 #'                         trt.formula=trt ~ 1,
 #'                         horizon = 14)
 #' final
+#' }
 #'
 #' @export
 interimAnalysis = function(data,

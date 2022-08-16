@@ -90,6 +90,7 @@ An object of the class \code{interimAnalysis}.
 A function performing an (interim) analysis based on a given data frame for a chosen estimator.
 }
 \examples{
+\dontrun{
 colon_cancer_enr = colon_cancer
 colon_cancer_enr$trt = ifelse(colon_cancer_enr$arm=="Obs", 1, 0)
 colon_cancer_enr$enrollmentTime = c(rep(1:100, 9), 1:29)
@@ -159,5 +160,6 @@ final = interimAnalysis(data = colon_cancer,
                         trt.formula=trt ~ 1,
                         horizon = 14)
 final
+}
 
 }

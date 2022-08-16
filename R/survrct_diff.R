@@ -17,7 +17,7 @@
 #' @return An estimated value for the treatment effect based on the observed dataset and estimation method.
 #'
 #' @examples
-#'
+#' colon_cancer$trt = ifelse(colon_cancer$arm=="Obs", 1, 0)
 #' survrct_diff(data=colon_cancer,
 #' estimand = "survprob",
 #' outcome.formula=Surv(months_to_death, event_death) ~ trt + age,
