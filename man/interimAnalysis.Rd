@@ -149,7 +149,7 @@ final = interimAnalysis(data = colon_cancer,
                         typeBetaSpending = "none",
                         futilityStopping = FALSE,
                         plannedAnalyses=2,
-                        bootstraps=10,
+                        bootstraps=100,
                         plannedInformationTimes = NULL,
                         parametersPreviousEstimators =
                         list(list(outcome.formula=Surv(.time_to_event_1, event_death) ~ trt + age,
