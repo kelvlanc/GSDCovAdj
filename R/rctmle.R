@@ -29,28 +29,19 @@
 #'   \item{y1_pred}{Predictions of the outcome under treatment for all recruited participants.}
 #'   \item{y0_pred}{Predictions of the outcome under control for all recruited participants.}}
 #' @export
-tmle <-
+rctmle <-
   function(
     data,
-    estimand = "difference",
     propensity_score_formula,
     inverse_weight_formulas,
     outcome_formulas,
-    outcome_type =
-      c("gaussian",
-        "logistic",
-        "binomial",
-        "multinomial-binomial")[1],
+    outcome_type,
+    estimand = "difference",
     outcome_range = NULL,
     absorbing_state = NULL,
     absorbing_outcome = NULL,
     impute_formulas = NULL,
-    impute_model =
-      c("gaussian",
-        "binomial",
-        "beta",
-        "pmm",
-        "multinomial")[1],
+    impute_model = NULL,
     imputation_args = NULL,
     ci = FALSE,
     verbose = FALSE,
@@ -174,6 +165,7 @@ tmle <-
         # impute_model, imputation_args, ...
         arg_list
       )
+
 
     if(ci){
 

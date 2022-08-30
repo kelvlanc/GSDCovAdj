@@ -3,7 +3,7 @@
 #' @description A function estimating the treatment effect for a given data frame and estimator.
 #'
 #' @param data A data frame containing the observed data at a given time. This data frame should have the same structure as the data frame outputted by \code{data_at_time_t}.
-#' @param estimationMethod A function naming the function to be called to estimate the treatment effect. Included in this package: \code{standardization} and \code{tmle}.
+#' @param estimationMethod A function naming the function to be called to estimate the treatment effect. Included in this package: \code{standardization} and \code{rctmle}.
 #' @param estimand A character string indicating the estimand of interest; treatment effect on "difference" scale, "ratio" scale or odds ratio ("oddsratio") scale.
 #' @param ... Further arguments for the estimator function.
 #'
@@ -32,7 +32,7 @@ calculateEstimate = function(data,
 #' @description A function that calculates the variance of the estimated treatment effect.
 #'
 #' @param data A data frame containing the observed data at a given time. This data frame should have the same structure as the data frame outputted by \code{data_at_time_t}.
-#' @param estimationMethod A function naming the function to be called to estimate the treatment effect. Included in this package: \code{standardization} and \code{tmle}.
+#' @param estimationMethod A function naming the function to be called to estimate the treatment effect. Included in this package: \code{standardization} and \code{rctmle}.
 #' @param estimand A character string indicating the estimand of interest; treatment effect on "difference" scale, "ratio" scale or odds ratio ("oddsratio") scale.
 #' @param bootstraps The number of bootstraps to calculate the variance.
 #' @param ... Further arguments for the estimator function.
@@ -75,7 +75,7 @@ calculateVariance = function(data,
 #' @description A function calculating the covariance of the current and previous estimates of the tretment effect.
 #'
 #' @param data A data frame containing the observed data at a given time. This data frame should have the same structure as the data frame outputted by \code{data_at_time_t}.
-#' @param estimationMethod A function naming the function to be called to estimate the treatment effect. Included in this package: \code{standardization} and \code{tmle}.
+#' @param estimationMethod A function naming the function to be called to estimate the treatment effect. Included in this package: \code{standardization} and \code{rctmle}.
 #' @param estimand A character string indicating the estimand of interest; treatment effect on "difference" scale, "ratio" scale or odds ratio ("oddsratio") scale.
 #' @param bootstraps The number of bootstraps to calculate the covariance.
 #' @param previousDatasets A list of data frames with same structure as in output of \code{data_at_time_t}. They represent the observed datasets up to the previous analysis time.
@@ -229,10 +229,10 @@ updateEstimate = function(covMatrixOriginal,
 #' @description A function that calculates the correction term for the estimated variance.
 #'
 #' @param data A data frame containing the observed data at a given time. This data frame should have the same structure as the data frame outputted by \code{data_at_time_t}.
-#' @param outcome_formula The outcome model to be fitted, when using \code{tmle} as \code{estimationMethod}.
+#' @param outcome_formula The outcome model to be fitted, when using \code{rctmle} as \code{estimationMethod}.
 #' @param y0_formula An object of the class \code{formula}, describing the model to be fitted for the outcome under control when using \code{standardization} as \code{estimationMethod}.
 #' @param y1_formula An object of the class \code{formula}, describing the model to be fitted for the outcome under treatment when using \code{standardization} as \code{estimationMethod}.
-#' @param estimationMethod A function naming the function to be called to estimate the treatment effect. Included in this package: \code{standardization} and \code{tmle}.
+#' @param estimationMethod A function naming the function to be called to estimate the treatment effect. Included in this package: \code{standardization} and \code{rctmle}.
 #' @param treatment_column A character string representing the column name of treatment variable.
 #'
 #' @importFrom stats model.matrix
@@ -246,7 +246,7 @@ calculateCorrectionTerm = function(data,
                                    estimationMethod,
                                    treatment_column=NULL){
 
-  if(estimationMethod==tmle){
+  if(estimationMethod==rctmle){
     number = length(names(select(data, contains(".r_"))))
     n=length(which(data[,paste(".r_",number,sep='')]==1))
     p=dim(model.matrix(outcome_formula[[number]], data))[2]

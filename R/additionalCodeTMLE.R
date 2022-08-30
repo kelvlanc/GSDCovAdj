@@ -1,10 +1,15 @@
 #' @import mvtnorm
-#' @import betareg
+#' @import mgcv
 #' @import nnet
 #' @import boot
 
 #' @importFrom stats binomial gaussian get_all_vars lm na.omit qlogis quasibinomial quasipoisson rbeta rbinom reformulate rlogis rmultinom sd update
 #' @importFrom utils head tail
+
+library(mvtnorm) # for rmvnorm in iid_centered_mvn()
+library(mgcv) # for impute_gam
+library(nnet) # for impute_monotone_multinomial
+library(boot) # for tmle - bootstrap inference
 
 ### compress_range #############################################################
 compress_range <-
@@ -437,51 +442,26 @@ absorbing_state_check <-
 ### impute_outcomes_to_monotone ################################################
 impute_outcomes_to_monotone <-
   function(
-    model =
-      c("gaussian",
-        "beta",
-        "binomial",
-        "pmm",
-        "multinomial-binomial"),
-    absorbing_state = NULL,
     ...
   ) {
+
     arg_list <- as.list(substitute(list(...)))[-1L]
 
-    if(model == "gaussian"){
+    if(arg_list$model %in% c("gaussian", "beta", "binomial", "pmm")) {
       do.call(
-        what = impute_gaussian,
-        args = arg_list
+        what = impute_gam,
+        args = arg_list[formalArgs(impute_gam)]
       )
-    } else if(model == "beta") {
-      do.call(
-        what = impute_beta,
-        args = arg_list
-      )
-    } else if(model == "binomial") {
-      do.call(
-        what = impute_binomial,
-        args = arg_list
-      )
-    } else if(model == "pmm") {
-      do.call(
-        what = impute_pmm,
-        args = arg_list
-      )
-    } else if(model == "multinomial") {
-      if(is.null(absorbing_state)){
+    } else if(arg_list$model == "multinomial") {
+      if(is.null(arg_list$absorbing_state)){
         do.call(
           what = impute_multinomial,
-          args = arg_list
+          args = arg_list[formalArgs(impute_multinomial)]
         )
       } else {
         do.call(
           what = impute_multinomial_absorbing,
-          args =
-            c(
-              arg_list,
-              absorbing_state = absorbing_state
-            )
+          args = arg_list[formalArgs(impute_multinomial_absorbing)]
         )
       }
     } else{
@@ -492,19 +472,36 @@ impute_outcomes_to_monotone <-
 
 
 
-### impute_gaussian ###################################################
+### impute_gam #################################################################
 # INTERNAL FUNCTION: Impute non-monotone missing data to monotone using
-# Gaussian GLM. `impute_columns` and the LHS of `impute_formulas` must
-# match temporal ordering of outcomes - This is checked by tmle_precheck().
-impute_gaussian <-
+# GAMs using the `mgcv` package. `impute_columns` and the LHS of
+# `impute_formulas` must match temporal ordering of outcomes - This is checked
+# by tmle_precheck().
+#
+# data: data.frame to impute
+# impute_columns: a data.frame indicating which rows to impute for each outcome
+# impute_formulas: a list of formulas, specifying imputation models.
+# verbose: logical - should imputation models and parameters be returned?
+# model: character - indicating how imputations should be generated, either from
+#   a probability model (gaussian/beta/binomial) or using predictive mean
+#   matching (pmm) to resample from observed values.
+# impute_family/impute_link: family and link - see ?mgcv::gam()
+# donors: numeric - number of candidates to resample from at random in PMM:
+#   ignored for parametric imputation.
+impute_gam <-
   function(
     data = data,
     impute_columns = impute_columns,
     impute_formulas,
     verbose = FALSE,
-    alpha = 0.05
+    model,
+    family,
+    donors = 10,
+    ...
   ) {
 
+
+    # Get names of variables to be imputed from LHS of formulas
     impute_formula_lhs <-
       sapply(
         X = impute_formulas,
@@ -513,148 +510,114 @@ impute_gaussian <-
 
     n_to_impute <- colSums(impute_columns)
 
-    imputation_models <- list()
+    imputation_models <- imputation_parameters <- list()
 
     for(i in 1:length(impute_formulas)){
 
       # Fit Imputation Model among observed cases
       impute_model <-
-        lm(
+        mgcv::gam(
           formula = impute_formulas[[i]],
-          data = data
+          data = data,
+          family = family,
+          ...
         )
 
       if(verbose) imputation_models[[i]] <- impute_model
 
-      # Sample from Prediction Interval
       pred_interval <-
-        with(
-          predict(
-            object = impute_model,
-            newdata = data[which(impute_columns[, i]),],
-            interval = "prediction",
-            se = TRUE
-          ),
-          data.frame(fit, se.fit, df)
+        predict(
+          object = impute_model,
+          newdata = data[which(impute_columns[, i]),],
+          type = "response",
+          se.fit = (model == "gaussian")
         )
 
-      # Fill in imputed values
-      data[which(impute_columns[, i]), impute_formula_lhs[i]] <-
-        with(
-          pred_interval,
-          rnorm(
-            n = n_to_impute[i],
-            mean = fit,
-            sd = (upr - fit)/qt(p = 1 - alpha/2, df = df)
+      if(model == "gaussian"){
+        pred_interval <-
+          with(
+            pred_interval,
+            data.frame(fit, se.fit)
           )
-        )
-    }
 
-    if(verbose){
-      return(
-        list(
-          imputed_data = data,
-          imputation_models = imputation_models
-        )
-      )
-    } else{
-      return(data)
-    }
-  }
+        # Sample from Prediction Interval
+        pred_interval$df <- impute_model$df.residual
+        pred_interval$sigma_sq <- impute_model$sig2
+        pred_interval$sd <- with(pred_interval, sqrt(se.fit^2 + sigma_sq))
+        pred_interval$lcl <-
+          with(pred_interval, fit + qt(p = 0.025, df = df)*sd)
+        pred_interval$ucl <-
+          with(pred_interval, fit + qt(p = 0.975, df = df)*sd)
 
-
-
-
-
-
-
-
-
-### impute_beta #######################################################
-# INTERNAL FUNCTION: Impute non-monotone missing data to monotone using
-# Beta GLM. `impute_columns` and the LHS of `impute_formulas` must
-# match temporal ordering of outcomes - This is checked by tmle_precheck().
-impute_beta <-
-  function(
-    data = data,
-    impute_columns = impute_columns,
-    impute_formulas,
-    verbose = FALSE,
-    link = c("logit", "probit", "cloglog", "cauchit", "log", "loglog")[1],
-    model_scale = FALSE,
-    type = c("BC", "ML", "BR")[1]
-  ) {
-
-    impute_formula_lhs <-
-      sapply(
-        X = impute_formulas,
-        FUN = function(x) all.vars(update(x, . ~ 0))
-      )
-
-    n_to_impute <- colSums(impute_columns)
-
-    imputation_models <- list()
-
-    for(i in 1:length(impute_formulas)){
-      # If scale is modeled, adjust formula accordingly
-      if(model_scale){
-        model_rhs <-
-          impute_formulas[[i]][[length(impute_formulas[[i]])]]
-
-        model_rhs <-
-          paste0(Reduce(paste, deparse(model_rhs)), " | ",
-                 Reduce(paste, deparse(model_rhs)))
-
-        impute_formulas[[i]] <-
-          reformulate(
-            termlabels = model_rhs,
-            response = impute_formula_lhs[i]
+        # Fill in imputed values
+        data[which(impute_columns[, i]), impute_formula_lhs[i]] <-
+          with(
+            pred_interval,
+            rnorm(
+              n = n_to_impute[i],
+              mean = fit,
+              sd = sd
+            )
           )
+
+      } else {
+        pred_interval <-
+          data.frame(fit = pred_interval)
+
+
+        if(model == "beta") {
+          pred_interval$m <-
+            impute_model$family$getTheta(trans = TRUE)
+          pred_interval$alpha <-
+            with(pred_interval, fit*m)
+          pred_interval$beta <-
+            with(pred_interval, (1 - fit)*m)
+
+          data[which(impute_columns[,i]), impute_formula_lhs[i]] <-
+            rbeta(
+              n = n_to_impute[i],
+              shape1 = pred_interval$alpha,
+              shape2 = pred_interval$beta,
+            )
+
+        } else if(model == "binomial"){
+          data[which(impute_columns[,i]), impute_formula_lhs[i]] <-
+            rbinom(
+              n = n_to_impute[i],
+              size = 1,
+              prob = pred_interval$fit
+            )
+        } else if(model == "pmm"){
+          # Get all non-missing values for candidates
+          candidates <-
+            na.omit(data[, impute_formula_lhs[i]])
+
+          # Find distance between fit and candidates
+          candidate_distance <-
+            kronecker(
+              X = candidates,
+              Y = matrix(data = 1, ncol = length(pred_interval$fit))
+            ) -
+            kronecker(
+              X = matrix(data = 1, nrow = length(candidates)),
+              Y = matrix(data = pred_interval$fit, nrow = 1)
+            )
+
+          selected_candidates <-
+            apply(
+              X = candidate_distance^2,
+              MARGIN = 2,
+              FUN = function(x, donors)
+                sample(x = which(rank(x) < donors), size = 1),
+              donors = donors
+            )
+
+          data[which(impute_columns[, i]), impute_formula_lhs[i]] <-
+            candidates[selected_candidates]
+        }
       }
 
-      # Fit Imputation Model among observed cases
-      impute_model <-
-        betareg(
-          formula = impute_formulas[[i]],
-          link = link,
-          data = data,
-          type = type
-        )
-
-      if(verbose) imputation_models[[i]] <- impute_model
-
-      beta_params <-
-        data.frame(
-          mean =
-            betareg::predict(
-              object = impute_model,
-              newdata = data[which(impute_columns[,i]),],
-              type = "response"
-            ),
-          var =
-            betareg::predict(
-              object = impute_model,
-              newdata = data[which(impute_columns[,i]),],
-              type = "variance"
-            )
-        )
-
-      beta_params$m <-
-        with(beta_params, (mean*(1 - mean)/var) - 1)
-      beta_params$alpha <-
-        with(beta_params, mean*m)
-      beta_params$beta <-
-        with(beta_params, (1 - mean)*m)
-
-      if(verbose) imputation_parameters[[i]] <- beta_params
-
-      # Sample in imputed values
-      data[which(impute_columns[,i]), impute_formula_lhs[i]] <-
-        rbeta(
-          n = n_to_impute[i],
-          shape1 = beta_params$alpha,
-          shape2 = beta_params$beta,
-        )
+      if(verbose) imputation_parameters[[i]] <- pred_interval
     }
 
     if(verbose){
@@ -663,157 +626,6 @@ impute_beta <-
           imputed_data = data,
           imputation_models = imputation_models,
           imputation_parameters = imputation_parameters
-        )
-      )
-    } else{
-      return(data)
-    }
-  }
-
-
-
-
-### impute_binomial ###################################################
-# INTERNAL FUNCTION: Impute non-monotone missing data to monotone using
-# binomial GLM with user-specified link. `impute_columns` and the LHS of
-# `impute_formulas` must match temporal ordering of outcomes -
-# This is checked by tmle_precheck().
-impute_binomial <-
-  function(
-    data = data,
-    impute_columns = impute_columns,
-    impute_formulas,
-    impute_link = c("logit", "probit", "cauchit", "cloglog")[1],
-    verbose = FALSE
-  ) {
-
-    impute_formula_lhs <-
-      sapply(
-        X = impute_formulas,
-        FUN = function(x) all.vars(update(x, . ~ 0))
-      )
-
-    n_to_impute <- colSums(impute_columns)
-
-    imputation_models <- list()
-
-    for(i in 1:length(impute_formulas)){
-
-      # Fit Imputation Model among observed cases
-      impute_model <-
-        glm(
-          formula = impute_formulas[[i]],
-          data = data,
-          family = binomial(link = impute_link)
-        )
-
-      if(verbose) imputation_models[[i]] <- impute_model
-
-      # Fill in imputed values
-      data[which(impute_columns[, i]), impute_formula_lhs[i]] <-
-        rbinom(
-          n = n_to_impute[i],
-          size = 1,
-          prob = predict(
-            object = impute_model,
-            newdata = data[which(impute_columns[, i]), ],
-            type = "response"
-          )
-        )
-
-    }
-
-    if(verbose){
-      return(
-        list(
-          imputed_data = data,
-          imputation_models = imputation_models
-        )
-      )
-    } else{
-      return(data)
-    }
-  }
-
-
-### impute_pmm #################################################################
-# INTERNAL FUNCTION: Impute non-monotone missing data to monotone using
-# binomial GLM with user-specified link. `impute_columns` and the LHS of
-# `impute_formulas` must match temporal ordering of outcomes -
-# This is checked by tmle_precheck().
-impute_pmm <-
-  function(
-    data = data,
-    impute_columns = impute_columns,
-    impute_formulas,
-    impute_family = c(gaussian, quasipoisson, quasibinomial)[[1]],
-    impute_link = c("identity", "log", "inverse", "logit", "probit")[1],
-    donors = 10,
-    verbose = FALSE
-  ){
-    impute_formula_lhs <-
-      sapply(
-        X = impute_formulas,
-        FUN = function(x) all.vars(update(x, . ~ 0))
-      )
-
-    n_to_impute <- colSums(impute_columns)
-
-    imputation_models <- list()
-
-    for(i in 1:length(impute_formulas)){
-
-      # Fit Imputation Model among observed cases
-      impute_model <-
-        glm(
-          formula = impute_formulas[[i]],
-          data = data,
-          family = impute_family(link = impute_link)
-        )
-
-      if(verbose) imputation_models[[i]] <- impute_model
-
-      # Get fitted value for missing data
-      y_hat <-
-        predict(
-          object = impute_model,
-          newdata = data[which(impute_columns[, i]), ],
-          type = "response"
-        )
-
-      # Get all non-missing values for candidates
-      candidates <-
-        na.omit(data[, impute_formula_lhs[i]])
-
-      # Find distance between fit and candidates
-      candidate_distance <-
-        kronecker(
-          X = candidates,
-          Y = matrix(data = 1, ncol = length(y_hat))
-        ) -
-        kronecker(
-          X = matrix(data = 1, nrow = length(candidates)),
-          Y = matrix(data = y_hat, nrow = 1)
-        )
-
-      selected_candidates <-
-        apply(
-          X = candidate_distance^2,
-          MARGIN = 2,
-          FUN = function(x, donors)
-            sample(x = which(rank(x) < donors), size = 1),
-          donors = donors
-        )
-
-      data[which(impute_columns[, i]), impute_formula_lhs[i]] <-
-        candidates[selected_candidates]
-    }
-
-    if(verbose){
-      return(
-        list(
-          imputed_data = data,
-          imputation_models = imputation_models
         )
       )
     } else{
@@ -855,7 +667,7 @@ impute_multinomial <-
 
       # Fit Imputation Model among observed cases
       impute_model <-
-        multinom(
+        nnet::multinom(
           formula = impute_formulas[[i]],
           data = data,
           trace = FALSE
@@ -967,7 +779,7 @@ impute_multinomial_absorbing <-
       if(sum(impute_full) > 0){
 
         impute_model <-
-          multinom(
+          nnet::multinom(
             formula = impute_formulas[[i]],
             data = data,
             trace = FALSE
@@ -1021,7 +833,7 @@ impute_multinomial_absorbing <-
         }
 
         impute_model <-
-          multinom(
+          nnet::multinom(
             formula = impute_formulas[[i]],
             data = non_absorbed,
             trace = FALSE
@@ -1153,6 +965,7 @@ compute_inverse_weights <-
 
         uncensored <- which(!prev_censored)
 
+
         if(carry_weights_forward) {
           ip_weights[uncensored, (i + 1)] <-
             ip_weights[uncensored, i]
@@ -1173,7 +986,7 @@ compute_inverse_weights <-
           }
 
           ipw_model <-
-            glm(
+            mgcv::gam(
               formula = inverse_weight_formulas[[i]],
               data = data[uncensored_unabsorbed, ],
               family = binomial
@@ -1321,10 +1134,7 @@ tmle_precheck <-
     imputation_x = NULL,
     impute_formulas = NULL,
     impute_model = NULL,
-    outcome_type =
-      c("gaussian",
-        "logistic",
-        "binomial")[1],
+    outcome_type,
     outcome_range = NULL,
     absorbing_state = NULL
   ) {
@@ -1436,7 +1246,7 @@ tmle_precheck <-
 
       if(!impute_model %in%
          c("gaussian", "binomial", "beta", "pmm", "multinomial")) {
-        stop("Invalid specification for `impute_model`:",
+        stop("Invalid specification for `impute_model`: ",
              impute_model)
       }
 
@@ -1497,7 +1307,7 @@ tmle_get_formulas <-
       inverse_weight_formulas[[i]] <-
         reformulate(
           termlabels =
-            Reduce(paste, deparse(inverse_weight_formulas[[i]][[3]])),
+            Reduce(paste, deparse(tail(inverse_weight_formulas[[i]], 1)[[1]])),
           response =
             paste("!is.na(", y_columns[i], ")", collapse = "", sep = "")
         )
@@ -1507,7 +1317,7 @@ tmle_get_formulas <-
       outcome_formulas[[i]] <-
         reformulate(
           termlabels =
-            Reduce(paste, deparse(outcome_formulas[[i]][[3]])),
+            Reduce(paste, deparse(tail(outcome_formulas[[i]], 1)[[1]])),
           response =
             paste0("..", y_columns[i])
         )
@@ -1531,26 +1341,18 @@ tmle_get_formulas <-
 tmle_compute <-
   function(
     data,
-    estimand = "difference",
     y_columns, tx_column,
     propensity_score_formula,
     inverse_weight_formulas,
     outcome_formulas,
-    outcome_type =
-      c("gaussian",
-        "logistic",
-        "binomial")[1],
+    outcome_type,
+    estimand,
     outcome_range = NULL,
     absorbing_state = NULL,
     absorbing_outcome = NULL,
     impute = FALSE,
     impute_formulas = NULL,
-    impute_model =
-      c("gaussian",
-        "binomial",
-        "beta",
-        "pmm",
-        "multinomial")[1],
+    impute_model = NULL,
     imputation_args = NULL,
     verbose = FALSE,
     max_abs_weight = 20
@@ -1593,7 +1395,7 @@ tmle_compute <-
 
     # Fit propensity score model & compute propensity score
     propensity_model <-
-      glm(
+      mgcv::gam(
         formula = propensity_score_formula,
         data = data,
         family = binomial
@@ -1641,12 +1443,34 @@ tmle_compute <-
     # Compute sequence of regression fits:
     regression_sequence <- list()
 
-    # Create new columns for fits and IPW:
-    data[, "..ipw"] <- NA
+    # Create indicators for those not previously censored or absorbed
+    uncensored <-
+      !is.na(data[, head(y_columns, -1)])
 
-    fit_y_columns <- paste0("..", c(y_columns))
+    absorbed <-
+      t(
+        apply(
+          X = data[, head(y_columns, -1)],
+          MARGIN = 1,
+          FUN = function(x, state = absorbing_state)
+            cummax(x %in% state)
+        )
+      )
+
+
+    # Add IPW, uncensored indicators, outcome model fits
+    fit_y_columns <- paste0("..", y_columns)
     data[, fit_y_columns] <- NA
-    data[, fit_y_columns[n_outcomes]] <- data[, y_columns[n_outcomes]]
+    data[, tail(x = fit_y_columns, 1)] <- data[, tail(x = y_columns, 1)]
+
+    data <-
+      cbind(
+        data,
+        setNames(object = data.frame(ipw),
+                 nm = paste0("..ipw_", 1:ncol(ipw))),
+        setNames(object = data.frame(cbind(TRUE, uncensored & !absorbed)),
+                 nm = paste0("..u_", 1:ncol(ipw)))
+      )
 
     if(outcome_type %in% "gaussian"){
       glm_family <- gaussian
@@ -1655,28 +1479,18 @@ tmle_compute <-
     }
 
     for(i in n_outcomes:1){
-      uncensored <-
-        if(i > 1){
-          if(is.null(absorbing_state)){
-            which(!is.na(data[, y_columns[(i-1)]]))
-          } else {
-            which(
-              !(is.na(data[, y_columns[(i-1)]]) |
-                  data[, y_columns[(i-1)]] %in% absorbing_state)
-            )
-          }
-        } else{
-          1:nrow(data)
-        }
-
-      data$..ipw <- ipw[, i]
+      uncensored <- which(data[, paste0("..u_", i)])
 
       outcome_regression <-
-        glm(
-          formula = outcome_formulas[[i]],
-          data = data[uncensored, ],
-          family = glm_family,
-          weights = data[uncensored,]$..ipw #..ipw
+        eval(
+          parse(
+            text =
+              paste0(
+                "mgcv::gam(formula = outcome_formulas[[", i, "]], ",
+                "family = glm_family, ",
+                "data = data, subset = ..u_", i, ", weights = ..ipw_", i, ")"
+              )
+          )
         )
 
       if(verbose) regression_sequence[[i]] <- outcome_regression
@@ -1685,14 +1499,15 @@ tmle_compute <-
         data[uncensored, fit_y_columns[(i - 1)]] <-
           predict(
             object = outcome_regression,
-            newdata = data[uncensored, ],
+            newdata =
+              subset(data, eval(parse(text = paste0("..u_", i)))),
             type = "response"
           )
 
         if(!is.null(absorbing_state)){
-          absorbed <- which(data[, y_columns[(i-1)]] %in% absorbing_state)
-          if(length(absorbed) > 0){
-            data[absorbed, fit_y_columns[(i - 1)]] <- absorbing_outcome
+          absorbed_i <- which(data[, y_columns[(i-1)]] %in% absorbing_state)
+          if(length(absorbed_i) > 0){
+            data[absorbed_i, fit_y_columns[(i - 1)]] <- absorbing_outcome
           }
         }
       }
@@ -1736,32 +1551,14 @@ tmle_compute <-
         )
     }
 
-
-    # Estimate treatment effect
     if(estimand == "difference"){
-
-      ate <-
-        mean(y_tx_1) - mean(y_tx_0)
-
-    }else{
-
-      if(estimand == "ratio"){
-
-        ate <-
-          mean(y_tx_1)/mean(y_tx_0)
-
-      }else{
-
-        if(estimand == "oddsratio"){
-
-          ate <-
-            (mean(y_tx_1)/(1-mean(y_tx_1)))/
-            (mean(y_tx_0)/(1-mean(y_tx_0)))
-
-        }
-      }
-
+      ate <- mean(y_tx_1) - mean(y_tx_0)
+    } else if (estimand == "ratio"){
+      ate <- mean(y_tx_1)/mean(y_tx_0)
+    } else if (estimand == "oddsratio"){
+      ate <- mean(y_tx_1)*(1 - mean(y_tx_0))/(mean(y_tx_0)*(1 - mean(y_tx_1)))
     }
+
 
     if(verbose){
       return(
