@@ -4,10 +4,11 @@
 #'
 #' @param data A data frame containing the observed data at a given time.
 #' @param estimand A character string indicating the estimand of interest (for an ordinal endpoint); difference in (weighted) means ("weighted_mean"), log odds ratio ("log_odds") and Mann-Whitney ("mann_whitney").
-#' @param out See \code{drord} in package \code{drord}.
-#' @param treat See \code{drord} in package \code{drord}.
-#' @param covar See \code{drord} in package \code{drord}.
-#' @param ... Further arguments for the estimator function drord.
+#' @param outcome_column A character string representing the column name of outcome variable.
+#' @param treatment_column A character string representing the column name of treatment variable.
+#' @param covariate_columns A vector of character string representing the column names of the covariates to include in the working proportional odds model (see function \code{drord} in apckage \code{drord}).
+#' @param ... Further arguments for the estimator function \code{drord} in package \code{drord}.
+#'
 #'
 #' @import drord
 #'

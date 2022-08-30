@@ -18,13 +18,13 @@ drordinal(
 
 \item{estimand}{A character string indicating the estimand of interest (for an ordinal endpoint); difference in (weighted) means ("weighted_mean"), log odds ratio ("log_odds") and Mann-Whitney ("mann_whitney").}
 
-\item{...}{Further arguments for the estimator function drord.}
+\item{outcome_column}{A character string representing the column name of outcome variable.}
 
-\item{out}{See \code{drord} in package \code{drord}.}
+\item{treatment_column}{A character string representing the column name of treatment variable.}
 
-\item{treat}{See \code{drord} in package \code{drord}.}
+\item{covariate_columns}{A vector of character string representing the column names of the covariates to include in the working proportional odds model (see function \code{drord} in apckage \code{drord}).}
 
-\item{covar}{See \code{drord} in package \code{drord}.}
+\item{...}{Further arguments for the estimator function \code{drord} in package \code{drord}.}
 }
 \value{
 An estimated value for the treatment effect based on the observed dataset and estimation method.
