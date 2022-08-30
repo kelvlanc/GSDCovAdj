@@ -17,7 +17,7 @@ calculateCovariance(
 \arguments{
 \item{data}{A data frame containing the observed data at a given time. This data frame should have the same structure as the data frame outputted by \code{data_at_time_t}.}
 
-\item{estimationMethod}{A function naming the function to be called to estimate the treatment effect. Included in this package: \code{standardization} and \code{tmle}.}
+\item{estimationMethod}{A function naming the function to be called to estimate the treatment effect. Included in this package: \code{standardization} and \code{rctmle}.}
 
 \item{estimand}{A character string indicating the estimand of interest; treatment effect on "difference" scale, "ratio" scale or odds ratio ("oddsratio") scale.}
 

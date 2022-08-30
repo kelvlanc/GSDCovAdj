@@ -16,13 +16,13 @@ calculateCorrectionTerm(
 \arguments{
 \item{data}{A data frame containing the observed data at a given time. This data frame should have the same structure as the data frame outputted by \code{data_at_time_t}.}
 
-\item{outcome_formula}{The outcome model to be fitted, when using \code{tmle} as \code{estimationMethod}.}
+\item{outcome_formula}{The outcome model to be fitted, when using \code{rctmle} as \code{estimationMethod}.}
 
 \item{y0_formula}{An object of the class \code{formula}, describing the model to be fitted for the outcome under control when using \code{standardization} as \code{estimationMethod}.}
 
 \item{y1_formula}{An object of the class \code{formula}, describing the model to be fitted for the outcome under treatment when using \code{standardization} as \code{estimationMethod}.}
 
-\item{estimationMethod}{A function naming the function to be called to estimate the treatment effect. Included in this package: \code{standardization} and \code{tmle}.}
+\item{estimationMethod}{A function naming the function to be called to estimate the treatment effect. Included in this package: \code{standardization} and \code{rctmle}.}
 
 \item{treatment_column}{A character string representing the column name of treatment variable.}
 }
