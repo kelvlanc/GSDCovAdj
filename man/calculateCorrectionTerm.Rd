@@ -6,7 +6,7 @@
 \usage{
 calculateCorrectionTerm(
   data,
-  outcome_formula = NULL,
+  outcome_formulas = NULL,
   y0_formula = NULL,
   y1_formula = NULL,
   estimationMethod,
@@ -16,7 +16,7 @@ calculateCorrectionTerm(
 \arguments{
 \item{data}{A data frame containing the observed data at a given time. This data frame should have the same structure as the data frame outputted by \code{data_at_time_t}.}
 
-\item{outcome_formula}{The outcome model to be fitted, when using \code{rctmle} as \code{estimationMethod}.}
+\item{outcome_formulas}{The outcome model to be fitted, when using \code{rctmle} as \code{estimationMethod}.}
 
 \item{y0_formula}{An object of the class \code{formula}, describing the model to be fitted for the outcome under control when using \code{standardization} as \code{estimationMethod}.}
 
