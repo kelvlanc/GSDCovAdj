@@ -147,9 +147,9 @@ interimAnalysis = function(data,
               length(previousDatasets))
 
   if(!(estimand %in% c("difference", "ratio", "oddsratio", "weighted_mean",
-                            "log_odds", "mann_whitney"))){
+                            "log_odds", "mann_whitney", "rmst", "survprob"))){
     stop("Estimand must be one of the following: difference, ratio, oddsratio, weighted_mean,
-                            log_odds, or mann_whitney")
+                            log_odds, mann_whitney, rmst, or survprob")
   }
 
   if(length(parametersPreviousEstimators)!=0 &

@@ -43,6 +43,10 @@ standardization = function(data,
                            family,
                            treatment_column=NULL){
 
+  if(!(estimand %in% c("difference", "ratio", "oddsratio"))){
+    stop("Estimand must be one of the following: difference, ratio, or oddsratio.")
+  }
+
   # Make a dataset with current cohort 1 data;
   # i.e., the cohort of patients used to fit working models
   number = length(names(select(data, contains(".r_"))))

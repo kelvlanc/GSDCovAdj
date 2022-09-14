@@ -34,6 +34,16 @@ survrct_diff <- function(data,
                          crossfit = TRUE,
                          horizon) {
 
+  if(!(estimand %in% c("rmst", "survprob"))){
+    stop("Estimand for the function survrct_diff must be one of the following:
+         rmst, or survprob")
+  }
+
+  if(!(algo %in% c("glm", "lasso", "rf", "xgboost"))){
+    stop("Method to be used for fitting hazard and ensoring nuisance parameters
+    (algo) must be one of the following: glm, lasso, rf or xgboost.")
+  }
+
   surv = survrct(outcome.formula,
                  trt.formula,
                  data,

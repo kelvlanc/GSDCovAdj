@@ -64,6 +64,18 @@ interimInformation = function(data,
                               correction="no",
                               ...){
 
+  if(!(estimand %in% c("difference", "ratio", "oddsratio", "weighted_mean",
+                       "log_odds", "mann_whitney", "rmst", "survprob"))){
+    stop("Estimand must be one of the following: difference, ratio, oddsratio, weighted_mean,
+                            log_odds, mann_whitney, rmst, or survprob")
+  }
+
+  if(length(parametersPreviousEstimators)!=0 &
+     length(parametersPreviousEstimators)!=length(previousEstimatesOriginal)){
+    stop("The parameters corresponding with previous estimators (i.e., parametersPreviousEstimators) should be a list with same length of previousEstimatesOriginal.")
+  }
+
+
   ellipsis_args = as.list(substitute(list(...)))[-1L]
 
   # Estimate (original) treatment effect and corresponding variance

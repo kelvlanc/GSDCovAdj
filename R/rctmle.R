@@ -51,6 +51,10 @@ rctmle <-
     ...
   ) {
 
+    if(!(estimand %in% c("difference", "ratio", "oddsratio"))){
+      stop("Estimand must be one of the following: difference, ratio, or oddsratio.")
+    }
+
     outcome_type <- tolower(outcome_type)
     impute_model <- tolower(impute_model)
 

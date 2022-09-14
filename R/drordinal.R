@@ -37,6 +37,11 @@ drordinal <- function(data,
                       covariate_columns,
                       ...) {
 
+  if(!(estimand %in% c("weighted_mean", "log_odds", "mann_whitney"))){
+    stop("Estimand for the function drordinal must be one of the following: weighted_mean,
+                            log_odds, or mann_whitney")
+  }
+
   ellipsis_args = as.list(substitute(list(...)))[-1L]
 
   all_args = c(list(out = data[,outcome_column], treat = data[,treatment_column],
