@@ -229,7 +229,7 @@ updateEstimate = function(covMatrixOriginal,
 #' @description A function that calculates the correction term for the estimated variance.
 #'
 #' @param data A data frame containing the observed data at a given time. This data frame should have the same structure as the data frame outputted by \code{data_at_time_t}.
-#' @param outcome_formula The outcome model to be fitted, when using \code{rctmle} as \code{estimationMethod}.
+#' @param outcome_formulas The outcome model to be fitted, when using \code{rctmle} as \code{estimationMethod}.
 #' @param y0_formula An object of the class \code{formula}, describing the model to be fitted for the outcome under control when using \code{standardization} as \code{estimationMethod}.
 #' @param y1_formula An object of the class \code{formula}, describing the model to be fitted for the outcome under treatment when using \code{standardization} as \code{estimationMethod}.
 #' @param estimationMethod A function naming the function to be called to estimate the treatment effect. Included in this package: \code{standardization} and \code{rctmle}.
@@ -240,19 +240,19 @@ updateEstimate = function(covMatrixOriginal,
 #'
 #' @return A numeric value representing a small sample size correction term for the estimated variance.
 calculateCorrectionTerm = function(data,
-                                   outcome_formula=NULL,
+                                   outcome_formulas=NULL,
                                    y0_formula=NULL,
                                    y1_formula=NULL,
                                    estimationMethod,
                                    treatment_column=NULL){
 
-  if(estimationMethod==rctmle){
+  if(identical(estimationMethod, rctmle)){
     number = length(names(select(data, contains(".r_"))))
     n=length(which(data[,paste(".r_",number,sep='')]==1))
-    p=dim(model.matrix(outcome_formula[[number]], data))[2]
+    p=dim(model.matrix(outcome_formulas[[number]], data))[2]
     correctionTerm = (n-1)/(n-p)
   }else{
-    if(estimationMethod==standardization){
+    if(identical(estimationMethod, standardization)){
       number = length(names(select(data, contains(".r_"))))
       n1=length(which(data[,paste(".r_",number,sep='')]==1&data[,treatment_column]==1))
       n0=length(which(data[,paste(".r_",number,sep='')]==1&data[,treatment_column]==0))
