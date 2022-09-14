@@ -136,6 +136,27 @@ interimAnalysis = function(data,
                            correction="no",
                            ...){
 
+  stopifnot(alpha>0 & alpha<1)
+  stopifnot(beta>0 & beta<1)
+  stopifnot(length(plannedInformationTimes) == plannedAnalyses,
+            length(previousEstimatesOriginal)==
+              length(previousInformationTimesOriginal),
+            length(previousEstimatesOriginal)==
+              length(previousInformationTimesUpdated),
+            length(previousEstimatesOriginal)==
+              length(previousDatasets))
+
+  if(!(estimand %in% c("difference", "ratio", "oddsratio", "weighted_mean",
+                            "log_odds", "mann_whitney"))){
+    stop("Estimand must be one of the following: difference, ratio, oddsratio, weighted_mean,
+                            log_odds, or mann_whitney")
+  }
+
+  if(length(parametersPreviousEstimators)!=0 &
+     length(parametersPreviousEstimators)!=length(previousInformationTimesOriginal)){
+    stop("The parameters corresponding with previous estimators (i.e., parametersPreviousEstimators) should be a list with same length of previousInformationTimesOriginal.")
+  }
+
   # Number of current analysis
   analysisNumber = length(previousInformationTimesOriginal)+1
 
