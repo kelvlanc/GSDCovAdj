@@ -23,11 +23,10 @@
 #'
 #' @importFrom stats glm predict
 #'
-#' @return An object of class \code{standardization}.
+#' @return An object of class \code{rctmle}.
 #' \describe{
-#'   \item{estimate}{Original estimate based on a standardization estimator (also called G-computation).}
-#'   \item{y1_pred}{Predictions of the outcome under treatment for all recruited participants.}
-#'   \item{y0_pred}{Predictions of the outcome under control for all recruited participants.}}
+#'   \item{ate}{Original estimate based on a (longitudinal) targeted maximum likelihood estimator.}
+#'   \item{...}{Depending on the values of \code{ci} and \code{verbose} more parameters might be returned.}}
 #' @export
 rctmle <-
   function(
@@ -192,21 +191,19 @@ rctmle <-
       lcl_ucl <-
         tail(x = tmle_boot_ci[bootstrap_type][[1]][1,], 2)
 
-      return(
-        c(
+        out = c(
           estimate = tmle_boot$t0,
           se = sd(tmle_boot$t),
           lcl = lcl_ucl[1],
           ucl = lcl_ucl[2],
           alpha = alpha
         )
-      )
     } else {
-      return(
-        tmle_boot_wrap(
+        out = tmle_boot_wrap(
           data = data,
           tmle_args = arg_list
         )
-      )
     }
+    class(out) <- "rctmle"
+    return(out)
   }
