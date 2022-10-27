@@ -2,7 +2,7 @@
 #'
 #' @description A function that estimates the treatment effect for binary and continuous outcomes via a (longitudinal) targeted maximum likelihood estimator.
 #'
-#' @param data A data frame containing the observed data at a given time. This data frame should have the same structure as the data frame outputted by \code{data_at_time_t}.
+#' @param data A data frame containing the observed data at a given time. This data frame should have the same structure as the data frame outputted by \code{data_at_time_t}. Treatment should be coded as 0 and 1.
 #' @param estimand A character string indicating the estimand of interest; treatment effect on "difference" scale, "ratio" scale or odds ratio ("oddsratio") scale.
 #' @param propensity_score_formula A formula for the propensity score model - the left-hand-side indicates the binary treatment assignment indicator variable.
 #' @param inverse_weight_formulas A list of formulas for computing inverse probability of censoring weights. Only the right-hand side of the formula is used.

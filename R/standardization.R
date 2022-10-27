@@ -7,7 +7,7 @@
 #' @param y0_formula An object of the class \code{formula}, describing the model to be fitted for the outcome under control.
 #' @param y1_formula An object of the class \code{formula}, describing the model to be fitted for the outcome under treatment.
 #' @param family A description of the error distribution and link function to be used in the model (see \code{family}).
-#' @param treatment_column A character string representing the column name of treatment variable.
+#' @param treatment_column A character string representing the column name of treatment variable. Treatment should be coded as 0 and 1.
 #'
 #' @importFrom stats glm predict
 #'

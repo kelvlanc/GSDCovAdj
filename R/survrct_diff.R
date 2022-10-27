@@ -2,7 +2,7 @@
 #'
 #' @description A function that estimates the treatment effect wrt a time-to-event outcome via a targeted maximum likelihood estimator (using the estimator functions in package \code{adjrct}).
 #'
-#' @param data A data frame containing the observed data at a given time.
+#' @param data A data frame containing the observed data at a given time. Treatment should be coded as 0 and 1.
 #' @param estimand A character string indicating the estimand of interest (for a time-to-event endpoint); difference in restricted mean survival time ("rmst") or difference in survival probabilities ("survprob").
 #' @param outcome.formula See \code{survrct} in package \code{adjrct}.
 #' @param trt.formula See \code{survrct} in package \code{adjrct}.
