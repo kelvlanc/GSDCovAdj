@@ -1,13 +1,13 @@
-#' Determining dataset at a given analysis time
+#' Determining dataset corresponding with a given analysis time
 #'
-#' @description A function that returns the a data frame with the observed data at a given \code{analysis_time}.
+#' @description A function that returns a data frame with the observed data at a given \code{analysis_time}.
 #'
 #' @param data A data frame.
-#' @param id_column A character string representing the column name of participant identifiers.
+#' @param id_column A character string representing the column name of the participant identifiers.
 #' @param enrollment_time A character string representing the column name of the enrollment times.
-#' @param treatment_column A character string representing the column name of treatment variable.
-#' @param covariate_columns A vector of character string representing the column names of the covariates.
-#' @param outcome_columns A vector of character string representing the column names of the outcomes (including intermediate outcomes). For time-to-event endpoints these are the column names of the status indicator.
+#' @param treatment_column A character string representing the column name of the treatment variable.
+#' @param covariate_columns A vector of character strings representing the column names of the covariates.
+#' @param outcome_columns A vector of character strings representing the column names of the outcomes (including intermediate outcomes). For time-to-event endpoints these are the column names of the status indicator.
 #' @param outcome_times A vector of character strings representing the column names of the outcome times (including intermediate outcomes). For time-to-event endpoints these are the column names of the times a participant got the event or was censored.
 #' @param analysis_time A numeric value for the time of the analysis.
 #' @param time_to_event \code{time_to_event=TRUE} for time-to-event endpoints. Default is \code{FALSE}.

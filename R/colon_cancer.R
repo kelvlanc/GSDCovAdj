@@ -1,7 +1,7 @@
 #' Mock colon cancer data set
 #'
 #' A dataset containing data that is similar in structure to the `colon`
-#' dataset in the survival package. This is a 3-arm trial involving colon cancer:
+#' dataset in the \code{survival} package. This is a 3-arm trial involving colon cancer:
 #' arms include observation, levamisole, and levamisole + 5-Fluorouracil.
 #' Baseline covariates `differ` and `nodes` have missing values that are imputed:
 #' a single imputation is performed. This simplifies analysis, likely at the
@@ -22,9 +22,9 @@
 #'   \item{perforation}{Perforation of colon}
 #'   \item{organ_adherence}{Adherence to nearby organs}
 #'   \item{positive_nodes}{Number of lymph nodes with detectable cancer}
-#'   \item{differentiation}{Differentiation of tumour (`1. Well`, `2. Moderate`, `3. Poor`)}
-#'   \item{local_spread}{Extent of local spread (`1. Submucosa`, `2. Muscle`, `3. Serosa`, `4. Contiguous structures`)}
-#'   \item{time_surgery_registration}{Time from surgery to registration (`0. Short`, `1. Long`)}
+#'   \item{differentiation}{Differentiation of tumour (`1. Well`, `2. Moderate` or `3. Poor`)}
+#'   \item{local_spread}{Extent of local spread (`1. Submucosa`, `2. Muscle`, `3. Serosa` or `4. Contiguous structures`)}
+#'   \item{time_surgery_registration}{Time from surgery to registration (`0. Short` or `1. Long`)}
 #'   \item{event_death}{Observed (1) or Censored (0)}
 #'   \item{time_to_death}{Days until death}
 #'   \item{event_recurrence}{Observed (1) or Censored (0)}

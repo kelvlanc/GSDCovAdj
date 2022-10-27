@@ -34,7 +34,7 @@
 #'   \item{marital}{Participant's marital status (`Married/Cohabitating`, `Never married` or `Divorced/Separated/Widowed`)}
 #'   \item{arsw_score_bl}{Adjective Rating Scale for Withdrawal (ARSW) Score at baseline}
 #'   \item{cows_total_score_bl}{Clinical Opiate Withdrawal Scale (COWS) Score at baseline}
-#'   \item{cows_category_bl}{COWS Severity Category at baseline - Ordinal (`0. No withdrawal` or `1. Mild withdrawal`)}
+#'   \item{cows_category_bl}{COWS Severity Category at baseline - Ordinal (`0. No withdrawal`, `1. Mild withdrawal`, `2. Moderate withdrawal`,`3. Moderately severe withdrawal` or `4. Severe withdrawal`)}
 #'   \item{vas_crave_opiates_bl}{Visual Analog Scale (VAS) - Self report of opiate cravings at baseline}
 #'   \item{vas_current_withdrawal_bl}{Visual Analog Scale (VAS) - Current withdrawal at baseline}
 #'   \item{vas_study_tx_help_bl}{Visual Analog Scale (VAS) - Study treatment helping symptoms at baseline}
@@ -43,7 +43,7 @@
 #'   \item{uds_any_positive_bl}{Urine Drug Screen - Any positive result at baseline (`Negative` or `Positive`)}
 #'   \item{arsw_score_eot}{Adjective Rating Scale for Withdrawal (ARSW) Score at end-of-taper}
 #'   \item{cows_total_score_eot}{Clinical Opiate Withdrawal Scale (COWS) Score at end-of-taper}
-#'   \item{cows_category_eot}{COWS Severity Category at end-of-taper - Ordinal (`0. No withdrawal` or `1. Mild withdrawal`)}
+#'   \item{cows_category_eot}{COWS Severity Category at end-of-taper - Ordinal (`0. No withdrawal`, `1. Mild withdrawal`, `2. Moderate withdrawal`,`3. Moderately severe withdrawal` or `4. Severe withdrawal`)}
 #'   \item{vas_crave_opiates_eot}{Visual Analog Scale (VAS) - Self report of opiate cravings at end-of-taper}
 #'   \item{vas_current_withdrawal_eot}{Visual Analog Scale (VAS) - Current withdrawal at end-of-taper}
 #'   \item{vas_study_tx_help_eot}{Visual Analog Scale (VAS) - Study treatment helping symptoms at end-of-taper}

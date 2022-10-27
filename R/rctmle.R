@@ -1,18 +1,18 @@
-#' Targeted maximum likelihood estimator
+#' Estimating estimands for binary and continuous endpoints via a (longitudinal) targeted maximum likelihood estimator
 #'
-#' @description A function that estimates the treatment effect via a (longitudinal) targeted maximum likelihood estimator.
+#' @description A function that estimates the treatment effect for binary and continuous outcomes via a (longitudinal) targeted maximum likelihood estimator.
 #'
 #' @param data A data frame containing the observed data at a given time. This data frame should have the same structure as the data frame outputted by \code{data_at_time_t}.
 #' @param estimand A character string indicating the estimand of interest; treatment effect on "difference" scale, "ratio" scale or odds ratio ("oddsratio") scale.
 #' @param propensity_score_formula A formula for the propensity score model - the left-hand-side indicates the binary treatment assignment indicator variable.
 #' @param inverse_weight_formulas A list of formulas for computing inverse probability of censoring weights. Only the right-hand side of the formula is used.
 #' @param outcome_formulas A list of formulas with one formula per outcome model, ordered from the first to the last observed outcome.
-#' @param outcome_type A character string indicating the type of outcome model to be fitted: "gaussian", "logistic", "binomial", "multinomial-binomial".
+#' @param outcome_type A character string indicating the type of outcome model to be fitted: "gaussian", "logistic", "binomial", or "multinomial-binomial".
 #' @param outcome_range A numeric vector of length 2 indicating the range of the outcome. Only used when outcome_type == "logistic".
 #' @param absorbing_state A character vector indicating which level (if any) of the outcome is an absorbing state. Only used when outcome_type == "multinomial-binomial".
 #' @param absorbing_outcome A value of 0 or 1 denoting whether the absorbing state is a success (1) or failure (0) for the binary final outcome. Only used when outcome_type == "multinomial-binomial".
 #' @param impute_formulas A list of formulas with one formula per intermediate outcome, containing the paramaterization of imputation models for intermediate outcomes.
-#' @param impute_model A character vector indicating the family of imputation model to use: "gaussian" (default), "binomial", "beta", "pmm", "multinomial".
+#' @param impute_model A character vector indicating the family of imputation model to use: "gaussian" (default), "binomial", "beta", "pmm", or "multinomial".
 #' @param imputation_args A list of arguments to pass to functions performing imputation.
 #' @param ci TRUE/FALSE - Should bootstrap-based confidence intervals be returned (TRUE) or just the estimate (FALSE).
 #' @param verbose TRUE/FALSE - Should all models and intermediate results be returned (TRUE) or just the estimate (FALSE).

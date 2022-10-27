@@ -1,6 +1,6 @@
-#' Standardization estimator
+#' Estimating estimands for binary and conitnuous endpoints via a standardization estimator
 #'
-#' @description A function that estimates the treatment effect via a standardization estimator (also called G-computation).
+#' @description A function that estimates the treatment effect for binary and continuous outcomes via a standardization estimator (also called G-computation).
 #'
 #' @param data A data frame containing the observed data at a given time. This data frame should have the same structure as the data frame outputted by \code{data_at_time_t}.
 #' @param estimand A character string indicating the estimand of interest; treatment effect on "difference" scale, "ratio" scale or odds ratio ("oddsratio") scale.

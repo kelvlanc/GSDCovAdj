@@ -6,11 +6,11 @@
 #' @param totalInformation A numeric value indicating the total/maximum information.
 #' @param analysisNumber A numeric value representing the number of the current analysis.
 #' @param previousDatasets A list of data frames with same structure as in output of \code{data_at_time_t}. They represent the observed datasets up to the previous analysis time.
-#' @param estimationMethod A function naming the function to be called to estimate the treatment effect. Included in this package: \code{standardization} and \code{tmle}.
-#' @param estimand A character string indicating the estimand of interest; treatment effect on "difference" scale, "ratio" scale or odds ratio ("oddsratio") scale.
+#' @param estimationMethod A function naming the function to be called to estimate the treatment effect. Included in this package: \code{standardization} (binary and continuous outcomes), \code{rctmle} (binary and continuous outcomes), \code{survrct_diff} (time-to-event outcomes) and \code{drordinal} (ordinal outcomes).
+#' @param estimand A character string indicating the estimand of interest; treatment effect on "difference" scale (continuous or binary outcome), "ratio" scale (binary outcome), odds ratio ("oddsratio") scale (binary outcome), difference in (weighted) means ("weighted_mean" for ordinal outcomes), log odds ratio ("log_odds" for ordinal outcomes), Mann-Whitney ("mann_whitney" for ordinal outcomes), difference in restricted mean survival time ("rmst" for time-to-event outcome) or difference in survival probabilities ("survprob" for time-to-event outcome).
 #' @param update A character string indicating whether information needs to be calculated based on the updated estimate ("yes") or based on the original estimate ("no").
 #' @param previousEstimatesOriginal A vector of numeric values containing the (original) estimates up to the previous analysis.
-#' @param previousCovMatrixOriginal A matrix of numeric varlues respresenting the covariance matrix of the (original) estimates up to the previous analysis.
+#' @param previousCovMatrixOriginal A matrix of numeric values respresenting the covariance matrix of the (original) estimates up to the previous analysis.
 #' @param parametersPreviousEstimators A list of a list with the parameters used for the previous estimates. One can also change the estimation method by adding \code{estimationMethod} to the different lists corresponding with the different analyses.
 #' @param correction Should a small sample correction be included?
 #' @param ... Further arguments for the estimator function or calculation of the variance (ie, number of bootstraps).

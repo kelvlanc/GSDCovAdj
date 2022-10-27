@@ -1,18 +1,17 @@
 #' Estimating estimands for ordinal endpoints
 #'
-#' @description A function that estimates the treatment effect wrt an ordinal outcome via a targeted maximum likelihood estimator.
+#' @description A function that estimates the treatment effect wrt an ordinal outcome via a targeted maximum likelihood estimator (using the estimator function \code{drord} in package \code{drord}).
 #'
 #' @param data A data frame containing the observed data at a given time.
 #' @param estimand A character string indicating the estimand of interest (for an ordinal endpoint); difference in (weighted) means ("weighted_mean"), log odds ratio ("log_odds") and Mann-Whitney ("mann_whitney").
-#' @param outcome_column A character string representing the column name of outcome variable.
-#' @param treatment_column A character string representing the column name of treatment variable.
+#' @param outcome_column A character string representing the column name of the outcome variable.
+#' @param treatment_column A character string representing the column name of the treatment variable.
 #' @param covariate_columns A vector of character string representing the column names of the covariates to include in the working proportional odds model (see function \code{drord} in apckage \code{drord}).
 #' @param ... Further arguments for the estimator function \code{drord} in package \code{drord}.
 #'
-#'
 #' @import drord
 #'
-#' @return An estimated value for the treatment effect based on the observed dataset and estimation method.
+#' @return An estimated value for the (chosen) treatment effect based on the observed dataset and estimation method.
 #'
 #' @examples
 #' ctn03_sim$arm_num = 1*(ctn03_sim$arm == "7-day")
